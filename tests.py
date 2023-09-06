@@ -1,4 +1,5 @@
 from unittest import TestLoader, TestSuite, TextTestRunner
+from app.tests.test_db import TestDB
 from app.tests.test_helpers import TestHelpers
 from app.tests.test_eda import TestEDA
 from app.tests.test_etl import TestETL
@@ -10,6 +11,7 @@ def suite():
     """
     tests = list()
     suite = TestSuite()
+    tests.append(TestLoader().loadTestsFromTestCase(TestDB))
     tests.append(TestLoader().loadTestsFromTestCase(TestHelpers))
     tests.append(TestLoader().loadTestsFromTestCase(TestEDA))
     tests.append(TestLoader().loadTestsFromTestCase(TestETL))
