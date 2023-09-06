@@ -4,3 +4,7 @@ from .tags import Tags
 from .specs import Specs
 from .genres import Genres
 from .games import Games
+from .users import Users
+from .reviews import Reviews
+from .funny_reviews import FunnyReviews
+from .helpful_reviews import HelpfulReviews
