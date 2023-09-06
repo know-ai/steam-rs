@@ -1,0 +1,27 @@
+FROM python:3.10.13-alpine3.18
+
+RUN adduser -D knowai
+
+WORKDIR /app
+
+LABEL author="KnowAI"
+
+LABEL description="Steam Recommendation System"
+
+RUN pip3 install --upgrade pip
+
+COPY requirements.txt requirements.txt
+
+RUN pip3 install -r requirements.txt
+
+COPY . .
+
+RUN chmod +x startup.sh
+
+RUN chown -R knowai:knowai ./
+
+USER knowai
+
+EXPOSE 5001
+
+ENTRYPOINT ["./startup.sh"]
