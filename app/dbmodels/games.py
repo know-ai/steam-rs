@@ -32,7 +32,6 @@ class Games(BaseModel):
 
     __tablename__ = 'games'
     title = db.Column(db.String(50), unique=True)
-    name = db.Column(db.String(50), unique=True)
     publisher_id = db.Column(db.Integer, db.ForeignKey('publishers.id'))
     release_date = db.Column(db.DateTime())
     discount_price = db.Column(db.Float, nullable=True)
