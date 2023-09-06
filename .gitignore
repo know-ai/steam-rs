@@ -13,6 +13,11 @@ __pycache__/
 *.gz
 *.json
 
+# Databases SQLite
+*.db
+
+migrations/
+
 # Distribution / packaging
 .Python
 build/

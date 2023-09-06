@@ -3,9 +3,8 @@ from flask import Flask
 from dotenv import load_dotenv
 import os
 from config import DevelopmentConfig, ProductionConfig
-# import urllib3
+from app.dbmodels import *
 
-# urllib3.disable_warnings()
 
 app = Flask(__name__, instance_relative_config=False)
 
@@ -34,7 +33,7 @@ class CreateApp():
         Documentation here
         """
         self.application = app
-        
+
         with app.app_context():
 
             from . import extensions
@@ -42,5 +41,5 @@ class CreateApp():
 
             from . import modules
             _app = modules.init_app(app)
-            
+
             return _app

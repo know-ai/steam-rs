@@ -16,7 +16,6 @@ class DB(Singleton):
         Documentation here
         """
         db.init_app(app)
-    
         Migrate(app, db)
 
         return app
