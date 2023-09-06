@@ -167,5 +167,6 @@ class Games(BaseModel):
             "metascore": self.metascore,
             "genres": [genre.name for genre in self.genres],
             "tags": [tag.name for tag in self.tags],
-            "specs": [spec.name for spec in self.specs]
+            "specs": [spec.name for spec in self.specs],
+            "url": f"http://store.steampowered.com/app/{self.id}/{self.name}/"
         }

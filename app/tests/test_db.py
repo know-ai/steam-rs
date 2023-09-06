@@ -169,22 +169,8 @@ class TestDB(unittest.TestCase):
             ]
             obj.add_specs(*specs)
             # Test
-            # result = {
-            #     "id": obj.id,
-            #     "title": obj.title,
-            #     "name": obj.name,
-            #     "price": obj.price,
-            #     "release_date": obj.release_date.date().strftime(DATE_FORMAT),
-            #     "discount_price": obj.discount_price,
-            #     "publisher": obj.publisher.name,
-            #     "developer": obj.developer.name,
-            #     "early_access": obj.early_access,
-            #     "metascore": obj.metascore,
-            #     "genres": [genre.name for genre in obj.genres],
-            #     "tags": [tag.name for tag in obj.tags],
-            #     "specs": [spec.name for spec in obj.specs]
-            # }
             game['genres'] = genres
             game['tags'] = tags
             game['specs'] = specs
+            game["url"] = f"http://store.steampowered.com/app/{obj.id}/{obj.name}/"
             self.assertDictEqual(dict(sorted(obj.serialize().items())), dict(sorted(game.items())))
