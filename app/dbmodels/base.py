@@ -23,16 +23,37 @@ class BaseModel(db.Model):
             db.session.add(attr)
             db.session.commit()
 
+            return attr
+
+    @classmethod
+    def get_by_name_or_create(cls, name):
+        
+        obj = cls.query.filter_by(name=name).first()
+
+        if obj:
+            
+            return obj
+
+        else:
+            
+            return cls.add(name)
+
     @classmethod
     def get(cls, first=True, **fields):
         
         obj = cls.query.filter_by(**fields)
 
-        if first:
+        if obj:
 
-            obj = obj.first()
+            if first:
 
-        return obj
+                obj = obj.first()
+
+            return obj
+        
+        else:
+
+            raise ValueError(f"record {fields} not exists into {cls.__tablename__}, please add it")
 
     @classmethod
     def name_exists(cls, name:str):

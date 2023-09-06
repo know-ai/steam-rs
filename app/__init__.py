@@ -5,7 +5,6 @@ import os
 from config import DevelopmentConfig, ProductionConfig
 from app.dbmodels import *
 
-
 app = Flask(__name__, instance_relative_config=False)
 
 def load_env_var():
