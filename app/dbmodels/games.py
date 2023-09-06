@@ -149,3 +149,23 @@ class Games(BaseModel):
             
             obj = self.add_spec(spec)
             self.specs.append(obj)
+
+    def serialize(self):
+        """
+        Documentation here
+        """
+        return {
+            "id": self.id,
+            "title": self.title,
+            "name": self.name,
+            "price": self.price,
+            "release_date": self.release_date.date().strftime(DATE_FORMAT),
+            "discount_price": self.discount_price,
+            "publisher": self.publisher.name,
+            "developer": self.developer.name,
+            "early_access": self.early_access,
+            "metascore": self.metascore,
+            "genres": [genre.name for genre in self.genres],
+            "tags": [tag.name for tag in self.tags],
+            "specs": [spec.name for spec in self.specs]
+        }
