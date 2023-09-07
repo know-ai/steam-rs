@@ -40,7 +40,9 @@ class TestDB(unittest.TestCase):
             'users',
             'reviews',
             'funny_reviews',
-            'helpful_reviews'
+            'helpful_reviews',
+            'games_users',
+            'playtime'
         ])
         assert_tables = sorted(list(db.metadata.tables.keys()))
         self.assertListEqual(tables, assert_tables)
@@ -132,16 +134,6 @@ class TestDB(unittest.TestCase):
             "metascore": None
         }
         with app.app_context():
-            # Create pusblisher record
-            publisher = {
-                "name": game["publisher"]
-            }
-            Publishers.add(**publisher)
-            # Create developer record
-            developer = {
-                "name": game["developer"]
-            }
-            Developers.add(**developer)
             # Create game record
             Games.add(**game)
             obj = Games.get(id=game['id'])
@@ -324,3 +316,94 @@ class TestDB(unittest.TestCase):
 
                 obj_user = Users.get(id=users[1]['id'])
                 self.assertEqual(obj_user.vote_for_helpful_review(**helpful_review), None)
+    
+    def test_buy_game(self):
+        """
+        Ensures that user can buy a game
+        """
+        game = {
+            "id": 562500,
+            "title": "Warstone TD",
+            "name": "Warstone TD",
+            "price": 14.99,
+            "release_date": "2017-04-06",
+            "discount_price": None,
+            "publisher": "Battlecruiser Games",
+            "developer": "Battlecruiser Games",
+            "early_access": True,
+            "metascore": None
+        }
+
+        user = {
+            "id": "xfluttersx",
+            "steam_id": "76561198069920369"
+        }
+
+        with app.app_context():
+            
+            # Create game record
+            obj_game = Games.add(**game) 
+            # Create an user
+            Users.add(**user)
+            obj = Users.get(id=user['id'])
+            self.assertDictEqual({
+                "id": obj.id,
+                "steam_id": obj.steam_id
+            }, user)
+
+            obj.buy_game(obj_game)
+
+            # Test
+            _game = {
+                "genres": list(),
+                "tags": list(),
+                "specs": list(),
+                "playtime_forever": 0, 
+                "playtime_2weeks": 0,
+                "url": f"http://store.steampowered.com/app/{game['id']}/{game['name']}/"
+            }
+            game.update(**_game)
+            result_assert = {
+                "games": [game],
+            }
+            user['reviews'] = list()
+            result_assert.update(**user)
+
+            self.assertDictEqual(dict(sorted(obj.serialize().items())), dict(sorted(result_assert.items())))
+
+    def test_play_time(self):
+        """
+        Ensures that playtime can be setted
+        """
+        game = {
+            "id": 562500,
+            "title": "Warstone TD",
+            "name": "Warstone TD",
+            "price": 14.99,
+            "release_date": "2017-04-06",
+            "discount_price": None,
+            "publisher": "Battlecruiser Games",
+            "developer": "Battlecruiser Games",
+            "early_access": True,
+            "metascore": None
+        }
+
+        user = {
+            "id": "xfluttersx",
+            "steam_id": "76561198069920369"
+        }
+
+        with app.app_context():
+            
+            # Create game record
+            obj_game = Games.add(**game) 
+            # Create an user
+            Users.add(**user)
+            obj = Users.get(id=user['id'])
+            self.assertDictEqual({
+                "id": obj.id,
+                "steam_id": obj.steam_id
+            }, user)
+
+            obj.buy_game(obj_game)
+            obj.set_playtime(game=obj_game, playtime_forever=1000, playtime_2weeks=0)

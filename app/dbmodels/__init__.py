@@ -8,3 +8,4 @@ from .users import Users
 from .reviews import Reviews
 from .funny_reviews import FunnyReviews
 from .helpful_reviews import HelpfulReviews
+from .playtime import Playtime

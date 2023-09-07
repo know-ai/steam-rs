@@ -28,6 +28,13 @@ games_specs = db.Table(
     db.Column('spec_id', db.Integer, db.ForeignKey('specs.id'))
 )
 
+games_users = db.Table(
+    'games_users',
+    db.Column('game_id', db.Integer, db.ForeignKey('games.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'))
+)
+ 
+
 class Games(BaseModel):
 
     __tablename__ = 'games'
@@ -42,6 +49,8 @@ class Games(BaseModel):
     genres = db.relationship('Genres', secondary=games_genres, backref='games', lazy='dynamic', cascade="all, delete") 
     tags = db.relationship('Tags', secondary=games_tags, backref='tags', lazy='dynamic', cascade="all, delete")
     specs = db.relationship('Specs', secondary=games_specs, backref='specs', lazy='dynamic', cascade="all, delete")
+    users = db.relationship('Users', secondary=games_users, backref='games', lazy='dynamic', cascade="all, delete")
+    playtime = db.relationship('Playtime',  backref='game', lazy='dynamic', cascade="all, delete")
 
     @classmethod
     def add(
@@ -70,9 +79,9 @@ class Games(BaseModel):
                 if discount_price >= price or discount_price < 0:
 
                     raise ValueError(f"price > discount_price must be > 0, you summit: {discount_price}")
-
-            publisher = Publishers.get(name=publisher)
-            developer = Developers.get(name=developer)
+            
+            publisher = Publishers.get_by_name_or_create(name=publisher)
+            developer = Developers.get_by_name_or_create(name=developer)
             attr = cls(
                 id=id,
                 name=name,
@@ -87,6 +96,8 @@ class Games(BaseModel):
             )
             db.session.add(attr)
             db.session.commit()
+
+            return attr
 
     @classmethod
     def title_exists(cls, title:str):
@@ -149,6 +160,12 @@ class Games(BaseModel):
             obj = self.add_spec(spec)
             self.specs.append(obj)
 
+    def get_all_users(self):
+        """
+        Documenation here
+        """
+        return [user.serialize() for user in self.users.all()]
+
     def serialize(self):
         """
         Documentation here
@@ -160,8 +177,8 @@ class Games(BaseModel):
             "price": self.price,
             "release_date": self.release_date.date().strftime(DATE_FORMAT),
             "discount_price": self.discount_price,
-            "publisher": self.publisher.name,
-            "developer": self.developer.name,
+            "publisher": None if self.publisher is None else self.publisher.name,
+            "developer": None if self.developer is None else self.developer.name,
             "early_access": self.early_access,
             "metascore": self.metascore,
             "genres": [genre.name for genre in self.genres],
