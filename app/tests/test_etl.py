@@ -51,9 +51,10 @@ class TestETL(unittest.TestCase):
                 }
             ]
         }
+        
         with self.subTest(f"Checking First Item"):
             
-            self.assertDictEqual(data[0], first_item)
+            self.assertDictEqual(next(data), first_item)
 
         last_item = {
             'user_id': 'LydiaMorley', 
@@ -89,10 +90,13 @@ class TestETL(unittest.TestCase):
             ]
         }
 
-        with self.subTest(f"Checking Last Item"):
-            
-            self.assertDictEqual(data[-1], last_item)
+        for item in data:
 
+            if not next(data):
+
+                with self.subTest(f"Checking Last Item"):
+                    
+                    self.assertDictEqual(item, last_item)
 
     def test_read_gz(self):
         """
@@ -137,7 +141,7 @@ class TestETL(unittest.TestCase):
         
         with self.subTest(f"Checking First Item"):
             
-            self.assertDictEqual(data[0], first_item)
+            self.assertDictEqual(next(data), first_item)
 
         last_item = {
             'user_id': 'LydiaMorley', 
@@ -173,6 +177,9 @@ class TestETL(unittest.TestCase):
             ]
         }
 
-        with self.subTest(f"Checking Last Item"):
-            
-            self.assertDictEqual(data[-1], last_item)
+        for item in data:
+
+            if not next(data):
+                with self.subTest(f"Checking Last Item"):
+                    
+                    self.assertDictEqual(item, last_item)
