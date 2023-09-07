@@ -28,3 +28,14 @@ class FunnyReviews(db.Model):
         db.session.commit()
 
         return attr
+    
+    def serialize(self):
+        """
+        Documentation here
+        """
+        return {
+            "id": self.id,
+            "funny": self.funny,
+            "user_id": self.user_id,
+            "review": self.review.serialize()
+        }

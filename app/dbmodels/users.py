@@ -96,3 +96,7 @@ class Users(db.Model):
             if review not in self.funny_reviews:
 
                 FunnyReviews.add(user_id=self.id, funny=funny, review_id=review.id)
+
+        else:
+
+            return None

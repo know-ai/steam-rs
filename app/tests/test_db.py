@@ -213,37 +213,68 @@ class TestDB(unittest.TestCase):
             review = {
                 "user_id": user_obj.id,
                 "recommend": True,
-                "review": """
-I've always liked games like Terraria with the 2 dimensional survival 
-and exploration aspect and Starbound does all these well and MORE!
-Lets start with its soundtrack: To sum it up in one paragraph would do it injustice. 
-This games soundtrack is fully orchestral and imersive. 
-The music just fits perfectly where-ever you are in game. 
-Whether you are spelunking or just flying through the vast expanse of space it 
-fits perfectly and leaves you in awe.Ok onto the graphics: 
-The look and feel of this game bring the vast worlds to life with the many colors 
-and alien dirts, trees and the mixture of monsters. 
-The backgrounds of the planets match up the the foregrounds well 
-and give the 2d aspect that 3d feel.Now the gameplay: 
-Starbound has a nice rich layer of gameplay revolving around survival. 
-In the latest unstable build updates they have introduced a very needed layer 
-of missions and npc quests which fullfil the gaps of just flying from planet 
-to planet and give purpose.Starbounds worlds have a wide variety of random aspects to 
-them.First off the flora: Flora of planets consists of 2-3 main aspects. 
-The Trees, the small bushes and medium bushes. 
-Each planet has a vast difference to the next in their flora with trees coming 
-in 2-3 different types from metallic trees to plain out alien tentacles.
-Now onto the fauna: Each planet has 3 or more ground based animals which increase 
-in strength further beneath the planets surface. 
-Starbound has a feature where animals are customized via their limbs and body. 
-There are many arms, legs, feet and bodies all just jumbled to together from monster to 
-monster making cute monsters and just plain out terrifying ones. 
-There are also around 2 bird species per planet. Using the same general system.
-I personally suggest this game because of its deep and fluid experience and its 
-wide modding community.8-9/10 for an early access and its only going to get better!
-""",
+                "review": "This Game Doesn't Work",
                 "posted": "2014-06-07"
             }
             obj = Reviews.add(**review)
 
             self.assertDictEqual(dict(sorted(obj.serialize().items())), dict(sorted(review.items())))
+
+    def test_add_funny_review(self):
+        """
+        Ensures that funny is added into funny_reviews table
+        """
+        users = [
+            {
+                "id": "devvonst",
+                "steam_id": "76561198069920369"
+            },
+            {
+                "id": "Carlos",
+                "steam_id": "82385888455000"
+            }
+        ]
+        with app.app_context():
+            
+            for user in users:
+                
+                Users.add(**user)
+
+            review = {
+                "user_id": user["id"],
+                "recommend": False,
+                "review": "This Game Doesn't Work",
+                "posted": "2014-06-07"
+            }
+            obj_review = Reviews.add(**review)
+
+            funny_review = {
+                "funny": True,
+                "review": obj_review
+            }
+            obj_user = Users.get(id=users[0]['id'])
+            obj_user.vote_for_funny_review(**funny_review)
+            for obj in obj_user.funny_reviews:
+                
+                with self.subTest("Valid funny_review"): 
+                    
+                    result_assert = {
+                        "id": 1,
+                        "user_id": users[0]["id"]
+                    }
+
+                    result_assert.update(**funny_review)
+                    result_assert["review"] = review
+
+                    self.assertDictEqual(dict(sorted(obj.serialize().items())), dict(sorted(result_assert.items())))
+            
+            with self.subTest("Same user can't vote itself by funny review"):
+
+                obj_user = Users.get(id=users[1]['id'])
+                self.assertEqual(obj_user.vote_for_funny_review(**funny_review), None)
+
+    def test_add_helpful_review(self):
+        """
+        Ensures that helpful is added into helpful_reviews table
+        """
+        pass
