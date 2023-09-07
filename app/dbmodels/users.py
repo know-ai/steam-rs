@@ -2,6 +2,7 @@ from app.extensions.db import db
 from datetime import datetime
 from .reviews import Reviews
 from .funny_reviews import FunnyReviews
+from .helpful_reviews import HelpfulReviews
 
 
 DATE_FORMAT = "%Y-%m-%d"
@@ -96,6 +97,19 @@ class Users(db.Model):
             if review not in self.funny_reviews:
 
                 FunnyReviews.add(user_id=self.id, funny=funny, review_id=review.id)
+
+        else:
+
+            return None
+        
+    def vote_for_helpful_review(self, review:Reviews, helpful:bool):
+        """Documentation here
+        """
+        if review.user_id != self.id:
+
+            if review not in self.helpful_reviews:
+
+                HelpfulReviews.add(user_id=self.id, helpful=helpful, review_id=review.id)
 
         else:
 

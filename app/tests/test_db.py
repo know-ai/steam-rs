@@ -277,4 +277,50 @@ class TestDB(unittest.TestCase):
         """
         Ensures that helpful is added into helpful_reviews table
         """
-        pass
+        users = [
+            {
+                "id": "devvonst",
+                "steam_id": "76561198069920369"
+            },
+            {
+                "id": "Carlos",
+                "steam_id": "82385888455000"
+            }
+        ]
+        with app.app_context():
+            
+            for user in users:
+                
+                Users.add(**user)
+
+            review = {
+                "user_id": user["id"],
+                "recommend": False,
+                "review": "This Game Doesn't Work",
+                "posted": "2014-06-07"
+            }
+            obj_review = Reviews.add(**review)
+            helpful_review = {
+                "helpful": True,
+                "review": obj_review
+            }
+            obj_user = Users.get(id=users[0]['id'])
+            obj_user.vote_for_helpful_review(**helpful_review)
+            for obj in obj_user.helpful_reviews:
+                
+                with self.subTest("Valid helpful_review"): 
+                    
+                    result_assert = {
+                        "id": 1,
+                        "user_id": users[0]["id"]
+                    }
+
+                    result_assert.update(**helpful_review)
+                    result_assert["review"] = review
+
+                    self.assertDictEqual(dict(sorted(obj.serialize().items())), dict(sorted(result_assert.items())))
+
+            with self.subTest("Same user can't vote itself by helpful review"):
+
+                obj_user = Users.get(id=users[1]['id'])
+                self.assertEqual(obj_user.vote_for_helpful_review(**helpful_review), None)
